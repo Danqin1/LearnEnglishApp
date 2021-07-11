@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,12 @@ namespace DefaultNamespace
 			saveSetButton.onClick.AddListener(SaveSet);
 		}
 
+		private void OnEnable()
+		{
+			wordsController.CreateNewWordsList();
+			ShowWords();
+		}
+
 		private void SaveSet()
 		{
 			var wordPairs = new List<WordPair>();
@@ -44,6 +51,8 @@ namespace DefaultNamespace
 			if (key.text != string.Empty && value.text != string.Empty)
 			{
 				wordsController.AddWordPair(key.text, value.text);
+				key.text = "";
+				value.text = "";
 			}
 			
 			ShowWords();

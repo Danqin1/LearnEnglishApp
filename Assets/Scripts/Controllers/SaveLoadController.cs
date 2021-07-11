@@ -8,12 +8,13 @@ namespace DefaultNamespace
 	[Serializable]
 	public struct SaveData
 	{
-		public List<Set> sets;
+		public List<SetData> sets;
 	}
 
 	[Serializable]
-	public struct Set
+	public struct SetData
 	{
+		public int id;
 		public string name;
 		public List<WordPairData> wordPairData;
 	}
@@ -25,25 +26,31 @@ namespace DefaultNamespace
 		public string value;
 	}
 	
-	public class SaveLoadController
+	public class SaveLoadController : IDisposable
 	{
 		private readonly string saveDirectory = "/Saves/";
-		private readonly string saveName= "save.txt";
+		private readonly string saveName = "save.txt";
 		private string savePath;
 		private SetsController setsController;
 		
 		public SaveLoadController(SetsController setsController)
 		{
 			this.setsController = setsController;
+			setsController.onSetAdded += Save;
+		}
+
+		public void Dispose()
+		{
+			setsController.onSetAdded -= Save;
 		}
 
 		public void Load()
 		{
-			savePath = Application.dataPath + saveDirectory + saveName;
+			savePath = Application.persistentDataPath + saveDirectory + saveName;
 			
-			if (!Directory.Exists(Application.dataPath + saveDirectory))
+			if (!Directory.Exists(Application.persistentDataPath + saveDirectory))
 			{
-				Directory.CreateDirectory(Application.dataPath + saveDirectory);
+				Directory.CreateDirectory(Application.persistentDataPath + saveDirectory);
 			}
 
 			if (File.Exists(savePath))
@@ -58,23 +65,24 @@ namespace DefaultNamespace
 					{
 						wordPairs.Add(new WordPair(w.key, w.value));
 					});
-					setsController.AddSet(x.name, wordPairs);
+					setsController.LoadSet(x.id, x.name, wordPairs);
 				});
 			}
 		}
 
 		public void Save()
 		{
-			var dataToSave = new List<Set>();
-			foreach (var kp in setsController.Sets)
+			var dataToSave = new List<SetData>();
+			foreach (var currentSet in setsController.Sets)
 			{
-				var set = new Set()
+				var set = new SetData()
 				{
-					name = kp.Key,
+					id = currentSet.id,
+					name = currentSet.name,
 					wordPairData = new List<WordPairData>()
 				};
 				
-				kp.Value.ForEach(x =>
+				currentSet.wordPairs.ForEach(x =>
 				{
 					set.wordPairData.Add(new WordPairData()
 					{

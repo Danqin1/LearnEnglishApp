@@ -8,7 +8,6 @@ public class SetsUI : MonoBehaviour
 {
     [SerializeField] private ScrollRect scrollView;
     [SerializeField] private SetLabel setLabelPrefab;
-    // Start is called before the first frame update
 
     private List<SetLabel> setLabels = new List<SetLabel>();
     private SetsController setsController;
@@ -37,10 +36,10 @@ public class SetsUI : MonoBehaviour
 			
         setLabels.Clear();
 			
-        setsController.Sets.Keys.ToList().ForEach(x =>
+        setsController.Sets.ForEach(x =>
         {
             var label = Instantiate(setLabelPrefab, scrollView.content.transform, false);
-            label.Populate(x);
+            label.Populate(x.id, x.name);
             label.onLabelRemove += OnLabelRemoved;
             label.onSetEnter += OnSetEnter;
             setLabels.Add(label);
@@ -49,13 +48,14 @@ public class SetsUI : MonoBehaviour
 
     private void OnSetEnter(SetLabel set)
     {
-        uiController.OnEnterSet(set.Name);
+        setsController.StartLearn(set.ID);
+        uiController.OnStartLearn();
     }
 
     private void OnLabelRemoved(SetLabel label)
     {
         setLabels.Remove(label);
-        setsController.RemoveSet(label.Name);
+        setsController.RemoveSet(label.ID);
 			
         ShowSets();
     }

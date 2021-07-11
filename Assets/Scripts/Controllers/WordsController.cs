@@ -1,26 +1,47 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Random = UnityEngine.Random;
 
 namespace DefaultNamespace
 {
 	public class WordsController
 	{
-		public List<WordPair> WordPairs { get; private set; } = new List<WordPair>();
+		public event Action onLearnPrepared;
+		
+		private SetsController setsController;
+
+		public List<WordPair> WordPairs;
+		
+		public WordsController(SetsController setsController)
+		{
+			this.setsController = setsController;
+			setsController.onStartLearn += OnStartLearn;
+		}
+
+		private void OnStartLearn(int id)
+		{
+			WordPairs = setsController.GetSet(id);
+			onLearnPrepared.Invoke();
+		}
 
 		public void AddWordPair(string key, string value)
 		{
+			if (WordPairs == null)
+			{
+				WordPairs = new List<WordPair>();
+			}
 			WordPairs.Add(new WordPair(key, value));
 		}
 
 		public WordPair GetRandomWordPair()
 		{
-			int notDoneCount = WordPairs.FindAll(x => !x.isDone).Count;
-			int randomIndex = Random.Range(0, notDoneCount);
+			var notDone = WordPairs.FindAll(x => !x.isDone);
+			int randomIndex = Random.Range(0, notDone.Count);
 			
-			if (notDoneCount != 0)
+			if (notDone.Count != 0)
 			{
-				return WordPairs[randomIndex];
+				return notDone[randomIndex];
 			}
 			
 			return null;
@@ -34,7 +55,11 @@ namespace DefaultNamespace
 			{
 				WordPairs.Remove(wordPair);
 			}
-			
+		}
+
+		public void CreateNewWordsList()
+		{
+			WordPairs = new List<WordPair>();
 		}
 	}
 }

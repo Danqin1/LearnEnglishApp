@@ -4,15 +4,16 @@
 	{
 		public string key;
 		public string value;
-		public int tries;
+		public int succededCount;
 		public bool isDone;
+		public bool failed;
 
 		public WordPair(string key, string value)
 		{
 			this.key = key;
 			this.value = value;
 
-			tries = 0;
+			succededCount = 0;
 			isDone = false;
 		}
 	}

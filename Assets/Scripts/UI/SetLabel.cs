@@ -12,8 +12,8 @@ namespace DefaultNamespace
 		[SerializeField] private Text name;
 		[SerializeField] private Button remove;
 		[SerializeField] private Button go;
-
-		public string Name => name.text;
+		
+		public int ID { get; private set; }
 
 		private void Awake()
 		{
@@ -37,8 +37,9 @@ namespace DefaultNamespace
 			onLabelRemove.Invoke(this);
 		}
 
-		public void Populate(string name)
+		public void Populate(int id, string name)
 		{
+			ID = id;
 			this.name.text = name;
 		}
 	}

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
@@ -20,6 +20,7 @@ namespace DefaultNamespace
 		private List<WordPairLabel> wordPairLabels = new List<WordPairLabel>();
 		private WordsController wordsController;
 		private SetsController setsController;
+		private EventSystem eventSystem;
 
 		private void Awake()
 		{
@@ -27,6 +28,8 @@ namespace DefaultNamespace
 			setsController = CoreContext.SetsController;
 			addButton.onClick.AddListener(AddWord);
 			saveSetButton.onClick.AddListener(SaveSet);
+			key.onEndEdit.AddListener(MoveToNextField);
+			eventSystem = EventSystem.current;
 		}
 
 		private void OnEnable()
@@ -85,6 +88,12 @@ namespace DefaultNamespace
 			wordsController.RemoveWordPair(label.Key);
 			
 			ShowWords();
+		}
+
+		private void MoveToNextField(string _)
+		{
+			eventSystem.SetSelectedGameObject(value.gameObject);
+			TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, true, false);
 		}
 	}
 }

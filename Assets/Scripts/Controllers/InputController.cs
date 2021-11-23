@@ -50,13 +50,11 @@ namespace DefaultNamespace
 					}
 				}
 			}
-
-			#if UNITY_EDITOR
+			
 			if (Input.GetKeyDown(KeyCode.Escape))
 			{
 				uiController.OnBack();
 			}
-			#endif
 		}
 	}
 }
